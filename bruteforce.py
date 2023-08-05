@@ -1,4 +1,5 @@
 import typing
+import time
 
 MAX_TRANSACTION = 1
 MAX_BUDGET_PER_CLIENT = 500
@@ -47,7 +48,7 @@ class Action:
 
 class Wallet:
     """
-    Custom Actions object container, allowing to perform specific operations
+    Custom Actions container, allowing to perform specific operations
     """
     def __init__(self, actions: list) -> None:
         self.actions: typing.List[Action] = actions[:]
@@ -80,7 +81,7 @@ def read_data() -> typing.List[Action]:
     for data in datas:
 
         # split one csv line and ignore the last character ('\n')
-        action_name, action_cost, action_benefit = data[:-1].split(";")
+        action_name, action_cost, action_benefit = data[:-1].split(",")
 
         # create a new Action object
         action = Action(
@@ -96,18 +97,22 @@ def read_data() -> typing.List[Action]:
 
 
 def main():
+    # max_benefit = 93.56, best_solution : 01111100111010011110
+
+    start = time.time()
 
     actions = read_data()
     wallet = Wallet(actions)
 
     ITEMS_COUNT = len(actions)
+    NB_SOLUTIONS = 2 ** ITEMS_COUNT
 
     max_benefit = 0
     best_solution = 0
 
-    for i in range(2 ** ITEMS_COUNT):
+    for i in range(NB_SOLUTIONS):
 
-        print(int_to_binary_string(i, ITEMS_COUNT))
+        print(f"\r{100 * i / NB_SOLUTIONS:.02f}% ({i:,}): {int_to_binary_string(i, ITEMS_COUNT)}", end="")
 
         wallet.mask = int_to_mask(i, ITEMS_COUNT)
 
@@ -120,18 +125,8 @@ def main():
                 best_solution = i
 
     print("\n" + "-" * 50)
-    print(f"max_benefit = {max_benefit:.02f}, best_solution : {int_to_binary_string(best_solution, ITEMS_COUNT)}\n")
+    print(f"max_benefit = {max_benefit:,.02f}, best_solution : {int_to_binary_string(best_solution, ITEMS_COUNT)}, timer = {time.time() - start:.02f}s\n")
 
 
 if __name__ == "__main__":
-    # max_benefit = 93.56, best_solution : 01111100111010011110
-
-    actions = read_data()
-    wallet = Wallet(actions)
-    wallet.mask = str_to_mask("01111100111010011110")
-
-    for index, action in enumerate(wallet.actions):
-        if wallet.mask[index]:
-            print(action)
-
-    print(wallet.get_cost(), wallet.get_benefit())
+    main()
