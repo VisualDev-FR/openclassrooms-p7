@@ -1,5 +1,6 @@
 import typing
 import time
+from action import read_bruteforce_data, Wallet
 
 MAX_TRANSACTION = 1
 MAX_BUDGET_PER_CLIENT = 500
@@ -32,76 +33,11 @@ def str_to_mask(binary_string: str) -> typing.List[bool]:
     return [*map(lambda i: int(i), binary_string)]
 
 
-class Action:
-    """
-    Simple class container for actions datas
-    """
-    def __init__(self, name: str, cost: float, benefit_rate: float) -> None:
-        self.name = name
-        self.cost = cost
-        self.benefit_rate = benefit_rate
-        self.benefit = self.cost * benefit_rate / 100
-
-    def __repr__(self) -> str:
-        return f"{self.name} {self.cost:.02f} {self.benefit:.02f}"
-
-
-class Wallet:
-    """
-    Custom Actions container, allowing to perform specific operations
-    """
-    def __init__(self, actions: list) -> None:
-        self.actions: typing.List[Action] = actions[:]
-        self.mask: typing.List[int] = [1 for _ in actions]
-
-    def get_benefit(self):
-        """
-        Calculate the total benefit of the wallet, considering the active actions through the mask
-        """
-        return sum([action.benefit for index, action in enumerate(self.actions) if self.mask[index]])
-
-    def get_cost(self):
-        """
-        Calculate the total cost of the wallet, considering the active actions through the mask
-        """
-        return sum([action.cost for index, action in enumerate(self.actions) if self.mask[index]])
-
-
-def read_data() -> typing.List[Action]:
-    """
-    read and parse the datas contained in bruteforce_data.csv to a list of Actions
-    """
-
-    result = []
-
-    # read the csv file as a list
-    with open("bruteforce_data.csv", "r") as reader:
-        datas = reader.readlines()
-
-    for data in datas:
-
-        # split one csv line and ignore the last character ('\n')
-        action_name, action_cost, action_benefit = data[:-1].split(",")
-
-        # create a new Action object
-        action = Action(
-            name=action_name,
-            cost=float(action_cost),
-            benefit_rate=float(action_benefit)
-        )
-
-        # append the new Action in the results list
-        result.append(action)
-
-    return result
-
-
-def main():
-    # max_benefit = 93.56, best_solution : 01111100111010011110
+if __name__ == "__main__":
 
     start = time.time()
 
-    actions = read_data()
+    actions = read_bruteforce_data()
     wallet = Wallet(actions)
 
     ITEMS_COUNT = len(actions)
@@ -112,8 +48,6 @@ def main():
 
     for i in range(NB_SOLUTIONS):
 
-        print(f"\r{100 * i / NB_SOLUTIONS:.02f}% ({i:,}): {int_to_binary_string(i, ITEMS_COUNT)}", end="")
-
         wallet.mask = int_to_mask(i, ITEMS_COUNT)
 
         if wallet.get_cost() <= MAX_BUDGET_PER_CLIENT:
@@ -123,10 +57,12 @@ def main():
             if benefit > max_benefit:
                 max_benefit = benefit
                 best_solution = i
+                
+    items = [actions[i] for i, value in enumerate(int_to_binary_string(best_solution, size=ITEMS_COUNT)) if int(value) > 0]
+    total_cost = sum([action.cost for action in items])
 
     print("\n" + "-" * 50)
-    print(f"max_benefit = {max_benefit:,.02f}, best_solution : {int_to_binary_string(best_solution, ITEMS_COUNT)}, timer = {time.time() - start:.02f}s\n")
+    print(f"max_benefit = {max_benefit:.02f}, total_cost = {total_cost:.02f}, timer = {time.time() - start:.02f}s, items :")
 
-
-if __name__ == "__main__":
-    main()
+    for action in items:
+        print(action.name, action.cost, sep=",")
