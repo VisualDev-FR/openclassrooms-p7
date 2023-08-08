@@ -15,6 +15,15 @@ def int_to_binary_string(integer: int, size: int) -> str:
     return f"{integer:0{size}b}"
 
 
+def str_to_mask(binary_string: str) -> typing.List[int]:
+    """
+    parse a binary string to a list of boolean.
+
+    sample: (binary_string="0011") => [0, 0, 1, 1]
+    """
+    return [*map(int, binary_string)]
+
+
 def int_to_mask(integer: int, size: int) -> typing.List[bool]:
     """
     parse an integer value to a list of boolean, corresponding to the binary representation of the given value.
@@ -22,15 +31,6 @@ def int_to_mask(integer: int, size: int) -> typing.List[bool]:
     sample: (integer=3, size=4) => [0, 0, 1, 1]
     """
     return str_to_mask(int_to_binary_string(integer, size))
-
-
-def str_to_mask(binary_string: str) -> typing.List[bool]:
-    """
-    parse a binary string to a list of boolean.
-
-    sample: (binary_string="0011") => [0, 0, 1, 1]
-    """
-    return [*map(lambda i: int(i), binary_string)]
 
 
 if __name__ == "__main__":
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     NB_SOLUTIONS = 2 ** ITEMS_COUNT
 
     max_benefit = 0
-    best_solution = 0
+    best_mask = 0
 
     for i in range(NB_SOLUTIONS):
 
@@ -56,13 +56,15 @@ if __name__ == "__main__":
 
             if benefit > max_benefit:
                 max_benefit = benefit
-                best_solution = i
+                best_mask = i
                 
-    items = [actions[i] for i, value in enumerate(int_to_binary_string(best_solution, size=ITEMS_COUNT)) if int(value) > 0]
-    total_cost = sum([action.cost for action in items])
+    best_mask = int_to_mask(best_mask, ITEMS_COUNT)
+
+    selected_actions = [actions[i] for i, value in enumerate(best_mask) if value]
+    total_cost = sum([action.cost for action in selected_actions])
 
     print("\n" + "-" * 50)
     print(f"max_benefit = {max_benefit:.02f}, total_cost = {total_cost:.02f}, timer = {time.time() - start:.02f}s, items :")
 
-    for action in items:
+    for action in selected_actions:
         print(action.name, action.cost, sep=",")
