@@ -13,7 +13,7 @@ def knapsack_solver(weights, values, max_weight):
     # initialize the dynamic programming matrix
     n = len(weights)
     matrix = [[0 for _ in range(max_weight + 1)] for _ in range(n + 1)]
-    
+
     # find the optimal solution
     for row in range(1, n + 1):
         for w in range(max_weight + 1):
@@ -34,14 +34,14 @@ def knapsack_solver(weights, values, max_weight):
             w -= weights[i - 1]
 
     # divide the obtained result by constant to get the real max value
-    max_value = matrix[n][max_weight] / constant
+    max_value = sum(values[i] for i in selected_items) / constant
     total_cost = sum(weights[i] for i in selected_items) / constant
 
     return max_value, total_cost, selected_items
 
 
 if __name__ == "__main__":
-    
+
     start = time.time()
 
     # read input datas
@@ -58,4 +58,4 @@ if __name__ == "__main__":
     print(f"max_benefit = {max_benefit}, total_cost = {total_cost}, timer = {time.time() - start:.02f}s, items :")
 
     for index in items:
-        print(actions[index].name, actions[index].cost, sep=",")
+        print(actions[index].name, actions[index].cost, actions[index].benefit_rate, sep=",")
