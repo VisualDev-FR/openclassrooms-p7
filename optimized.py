@@ -43,9 +43,13 @@ def knapsack_solver(weights, values, max_weight):
 if __name__ == "__main__":
 
     start = time.time()
+    dataset = action.get_dataset()
 
-    # read input datas
-    actions = [action for action in action.read_bruteforce_data() if action.cost > 0]
+    if not dataset:
+        exit()
+    else:
+        # read input datas and filter actions with non-positive cost
+        actions = [action for action in dataset if action.cost > 0]
 
     # filter the actions with positive cost
     weights = [action.cost for action in actions]
@@ -58,4 +62,4 @@ if __name__ == "__main__":
     print(f"max_benefit = {max_benefit}, total_cost = {total_cost}, timer = {time.time() - start:.02f}s, items :")
 
     for index in items:
-        print(actions[index].name, actions[index].cost, actions[index].benefit_rate, sep=",")
+        print(actions[index].name, actions[index].cost, f"{actions[index].benefit:.02f}", sep=",")

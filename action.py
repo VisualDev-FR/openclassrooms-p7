@@ -1,4 +1,5 @@
 import typing
+import sys
 
 MAX_BUDGET_PER_CLIENT = 500
 
@@ -77,3 +78,22 @@ def read_dataset_1():
 
 def read_dataset_2():
     return read_data("data/dataset2_Python+P7.csv")
+
+
+def get_dataset() -> typing.List[Action]:
+    args = sys.argv[1:]
+
+    if len(args) == 0:
+        print(f"\nYou must provide a dataset index\n - [0] = bruteforce datas\n - [1] = dataset_1\n - [2] = dataset_2\n")
+        return None
+
+    if args[0] == "0":
+        return read_bruteforce_data()
+
+    if args[0] == "1":
+        return read_dataset_1()
+
+    if args[0] == "2":
+        return read_dataset_2()
+
+    print(f"\nYou didn't provide a valid dataset index\n - [0] = bruteforce datas\n - [1] = dataset_1\n - [2] = dataset_2\n")

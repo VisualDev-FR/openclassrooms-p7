@@ -67,4 +67,4 @@ if __name__ == "__main__":
     print(f"max_benefit = {max_benefit:.02f}, total_cost = {total_cost:.02f}, timer = {time.time() - start:.02f}s, items :")
 
     for action in selected_actions:
-        print(action.name, action.cost, sep=",")
+        print(action.name, action.cost, f"{action.benefit:.02f}", sep=",")
