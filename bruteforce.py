@@ -57,7 +57,7 @@ if __name__ == "__main__":
             if benefit > max_benefit:
                 max_benefit = benefit
                 best_mask = i
-                
+
     best_mask = int_to_mask(best_mask, ITEMS_COUNT)
 
     selected_actions = [actions[i] for i, value in enumerate(best_mask) if value]

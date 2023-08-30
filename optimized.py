@@ -15,7 +15,7 @@ def knapsack_solver(weights, values, max_weight):
     matrix = [[0 for _ in range(max_weight + 1)] for _ in range(n + 1)]
 
     # find the optimal solution
-    for row in range(1, n + 1):
+    for row in range(n + 1):
         for w in range(max_weight + 1):
             if weights[row - 1] <= w:
                 matrix[row][w] = max(
