@@ -5,7 +5,7 @@
     python bruteforce.py
     ```
 
-* Lancement du script de bruteforce :
+* Lancement du script optimisé :
     ```bash
     python optimized.py <dataset_index>
     ```
